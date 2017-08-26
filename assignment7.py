@@ -1,5 +1,12 @@
-# ASSIGNMENT 7
-# John Radice
+# -*- coding: utf-8 -*-
+"""Feature Detection & Matching
+============================
+
+This module provides functions to match features across two images and
+visualize the matches across the two images as a singular image.
+
+Author: John Radice
+"""
 
 import numpy as np
 import scipy as sp
@@ -19,46 +26,21 @@ except ImportError:
       raise AttributeError("Version of OpenCV(%s) does not have SIFT / ORB."
                       % cv2.__version__)
 
-
-""" Assignment 7 - Feature Detection and Matching
-
-This file has a number of functions that you need to fill out in order to
-complete the assignment. Please write the appropriate code, following the
-instructions on which functions you may or may not use.
-
-GENERAL RULES:
-    1. DO NOT INCLUDE code that saves, shows, displays, writes the image that
-    you are being passed in. Do that on your own if you need to save the images
-    but the functions should NOT save the image to file. (This is a problem
-    for us when grading because running 200 files results a lot of images being
-    saved to file and opened in dialogs, which is not ideal). Thanks.
-
-    2. DO NOT import any other libraries aside from the three libraries that we
-    provide. You may not import anything else, you should be able to complete
-    the assignment with the given libraries (and in most cases without them).
-
-    3. DO NOT change the format of this file. Do not put functions into classes,
-    or your own infrastructure. This makes grading very difficult for us. Please
-    only write code in the allotted region.
-"""
-
 def findMatchesBetweenImages(image_1, image_2):
-  """ Return the top 10 list of matches between two input images.
+  """Return the top 10 list of matches between two input images.
 
-  This function detects and computes SIFT (or ORB) from the input images, and
-  returns the best matches using the normalized Hamming Distance.
+  This function detects and computes SIFT (or ORB) from the input
+  images, and returns the best matches using the normalized
+  Hamming Distance.
 
-  Follow these steps:
+  Algorithm:
   1. Compute SIFT keypoints and descriptors for both images
-  2. Create a Brute Force Matcher, using the hamming distance (and set
-     crossCheck to true).
+  2. Create a Brute Force Matcher, using the hamming distance
+     (crossCheck set to true).
   3. Compute the matches between both images.
   4. Sort the matches based on distance so you get the best matches.
-  5. Return the image_1 keypoints, image_2 keypoints, and the top 10 matches in
-     a list.
-
-  Note: We encourage you use OpenCV functionality (also shown in lecture) to
-  complete this function.
+  5. Return the image_1 keypoints, image_2 keypoints, and the top 10
+     matches in a list.
 
   Args:
     image_1 (numpy.ndarray): The first image (grayscale).
@@ -69,9 +51,8 @@ def findMatchesBetweenImages(image_1, image_2):
                        cv2.KeyPoint.
     image_2_kp (list): The image_2 keypoints, the elements are of type
                        cv2.KeyPoint.
-    matches (list): A list of matches, length 10. Each item in the list is of
-                    type cv2.DMatch.
-
+    matches (list): A list of matches, length 10. Each item in the list
+                    is of type cv2.DMatch.
   """
   # matches - type: list of cv2.DMath
   matches = None
@@ -84,33 +65,31 @@ def findMatchesBetweenImages(image_1, image_2):
   # image_2_desc - type: numpy.ndarray of numpy.uint8 values.
   image_2_desc = None
 
-  # WRITE YOUR CODE HERE
+  # 1. Compute SIFT keypoints and descriptors for both images.
   sift = SIFT()
-
   image_1_kp, image_1_desc = sift.detectAndCompute(image_1, None)
   image_2_kp, image_2_desc = sift.detectAndCompute(image_2, None)
 
+  # 2. Create a Brute Force Matcher
   bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
+  # 3. Compute matches between both images.
   matches = bf.match(image_1_desc, image_2_desc)
 
+  # 4. Sort the matches based on distance.
   matches = sorted(matches, key = lambda x:x.distance)
 
-  # We coded the return statement for you. You are free to modify it -- just
-  # make sure the tests pass.
+  # Return the keypoints from both images and the top 10 matches
   return image_1_kp, image_2_kp, matches[:10]
-  # END OF FUNCTION.
+  # END OF findMatchesBetweenImages(image_1, image_2)
 
 
 def drawMatches(image_1, image_1_keypoints, image_2, image_2_keypoints, matches):
   """ Draws the matches between the image_1 and image_2.
 
-  This function is provided to you for visualization because there were
+  This function is provides alternative visualization because there were
   differences in the OpenCV 3.0.0-alpha implementation of drawMatches and the
   2.4.9 version, so we decided to provide the functionality ourselves.
-
-  Note: Do not edit this function, it is provided for you for visualization
-  purposes.
 
   Args:
     image_1 (numpy.ndarray): The first image (can be color or grayscale).
